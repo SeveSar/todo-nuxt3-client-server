@@ -1,0 +1,3 @@
+cd client                cd server
+yarn                     npm i
+yarn dev                 npm run dev
