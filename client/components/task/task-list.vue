@@ -6,7 +6,7 @@
         </div>
 
         <TaskListControls :search="filters.search" :activeTab="filters.filter" :is-show-all="filters.isShowAll"
-            @change="onChangeFilter" @update:isShowAll="onChangeShowAll" @update:search="filters.search = $event" />
+            @change="onChangeFilter" @update:isShowAll="onChangeShowAll" @update:search="onSearch" />
         <div v-if="(pending || (!pending && !data?.data.length) || (!pending && !!filters.search && !data?.data.length))"
             class=" grow flex items-center justify-center">
             <UiSpinner v-if="pending" class="mt-8" />
@@ -126,7 +126,10 @@ const onChangeFilter = ({ filter, sortBy, sortOrder }: ITaskQueries) => {
     filters.value.sortOrder = sortOrder
     filters.value.page = 1
 }
-
+const onSearch = (value: string) => {
+    filters.value.search = value
+    filters.value.page = 1
+}
 const onChangePage = (page: number) => {
     filters.value.page = page
 }
