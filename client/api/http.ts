@@ -1,20 +1,22 @@
 import { useUserStore } from '~/store/user-store'
 import type { AnyObject, HttpClient } from './types'
+import type { IUser } from '~/types/user'
 
-let refreshTokenRequest: Promise<void> | null = null
+let refreshTokenRequest: Promise<IUser> | null = null
 
 const refreshToken = async () => {
     const userStore = useUserStore()
     try {
         if (refreshTokenRequest === null) {
-            refreshTokenRequest = $fetch('/auth/refresh', {
+            refreshTokenRequest = $fetch<IUser>('/auth/refresh', {
                 baseURL: useRuntimeConfig().public.apiBaseURL,
                 credentials: 'include',
             })
         }
 
-        await refreshTokenRequest
+        const res = await refreshTokenRequest
         refreshTokenRequest = null
+        return res
     }
     catch (e) {
         userStore.logout()
@@ -30,23 +32,30 @@ export const useHttp = (): HttpClient => {
         options: {
             method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
             query?: AnyObject
-            body?: AnyObject
+            body?: AnyObject,
         } = {}
     ): Promise<T> => {
         try {
+            const userStore = useUserStore()
             return await $fetch<T>(url, {
                 baseURL: config.public.apiBaseURL,
                 credentials: 'include',
+                headers: {
+                    Authorization: `Bearer ${userStore.user?.accessToken}`
+                },
                 ...options
             })
         } catch (e: any) {
             if (e?.status === 401) {
-                await refreshToken()
+                const res = await refreshToken()
 
                 return await $fetch<T>(url, {
                     baseURL: config.public.apiBaseURL,
                     credentials: 'include',
-                    ...options
+                    headers: {
+                        Authorization: `Bearer ${res?.accessToken}`
+                    },
+                    ...options,
                 })
             }
 

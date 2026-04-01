@@ -7,11 +7,17 @@ export const useUserApi = () => {
         login(data: Record<string, any>) {
             return $api.post<IUser>('/auth/login', data)
         },
-        loadUser() {
-            return $api.get<IUser>('/auth/me');
-        },
+        // loadUser() {
+        //     return $api.get<IUser>('/auth/me');
+        // },
         logout() {
             return $api.get('/auth/logout')
+        },
+        refresh() {
+            return $fetch<IUser>('/auth/refresh', {
+                baseURL: useRuntimeConfig().public.apiBaseURL,
+                credentials: 'include',
+            })
         }
 
     }

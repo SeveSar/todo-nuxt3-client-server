@@ -8,7 +8,7 @@ export const useUserStore = defineStore('user', () => {
     const isLoggedIn = ref(false)
 
     const route = useRoute()
-    const setUser = (userData: IUser | null) => {
+    const setUser = (userData: IUser) => {
         user.value = userData
     }
 
@@ -24,8 +24,9 @@ export const useUserStore = defineStore('user', () => {
     const loadUser = async () => {
         if (isLoggedIn.value) return
         try {
-            const user = await useTaskApi.loadUser()
-            setUser(user)
+            const response = await useTaskApi.refresh()
+
+            setUser(response)
             navigateTo({ name: 'index', query: { ...route.query } })
         }
         catch (e) {
@@ -41,6 +42,7 @@ export const useUserStore = defineStore('user', () => {
         navigateTo('/auth')
         return useTaskApi.logout()
     }
+
     const checkCanEditOrRemove = (createdBy: string | null) => {
         if (!user.value?.user || !createdBy) return
 
