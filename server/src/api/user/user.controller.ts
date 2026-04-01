@@ -51,16 +51,16 @@ class UserController {
       if (req.body.isRemember) {
         res.cookie(REFRESH_TOKEN_KEY, refreshToken, {
           httpOnly: true,
-          secure: false,
-          // sameSite: 'none',
+          secure: true,
+          sameSite: 'none',
           maxAge: MAX_AGE_REFRESH_TOKEN,
         });
       }
 
       res.cookie(ACCESS_TOKEN_KEY, accessToken, {
         httpOnly: true,
-        secure: false,
-        // sameSite: 'none',
+        secure: true,
+        sameSite: 'none',
         maxAge: MAX_AGE_ACCESS_TOKEN,
       });
 
@@ -102,8 +102,8 @@ class UserController {
 
       res.cookie(ACCESS_TOKEN_KEY, accessToken, {
         httpOnly: true,
-        secure: false,
-        // sameSite: 'none',
+        secure: true,
+        sameSite: 'none',
         maxAge: MAX_AGE_ACCESS_TOKEN,
       });
       return res.json({
