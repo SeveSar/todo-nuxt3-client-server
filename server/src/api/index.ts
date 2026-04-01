@@ -47,4 +47,4 @@ const start = async () => {
     loggerService.err(e);
   }
 };
-// start();
+start();
