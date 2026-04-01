@@ -69,7 +69,7 @@ class UserController {
 
       // await basketService.createOrUpdateBasket(userDTO, cart);
 
-      return res.json({ userDTO, accessToken });
+      return res.json({ user: userDTO, accessToken });
     } catch (e) {
       console.dir(e);
       loggerService.err(`[Login]: ${e}`);
