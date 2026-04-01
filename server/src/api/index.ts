@@ -14,14 +14,15 @@ import { errorMiddleware } from '../middleware/error.middleware';
 
 const app = express();
 const PORT = process.env.PORT || getEnv('PORT').required().asIntPositive();
-const whitelist = ['http://localhost:3000', 'http://localhost:5050', 'https://mevn-shop-client-rho.vercel.app', 'https://todo-nuxt3-client-server.vercel.app'];
+const whitelist = ['http://localhost:3000', 'http://localhost:5050', 'https://todo-nuxt3-client-server.vercel.app'];
 
 
 
 app.use(express.static(path.join(__dirname, '../../public')));
 app.use(cors({
   credentials: true,
-  origin: whitelist,
+  // origin: 'https://todo-nuxt3-client-server.vercel.app',
+  origin: whitelist
 
 }));
 app.use(json());

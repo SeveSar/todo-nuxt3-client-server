@@ -78,14 +78,14 @@ class UserService {
     }
     return new UserDTO(userFromDb);
   }
-  async refresh(refreshToken: string) {
+  async refresh(refreshTokenCookie: string) {
 
-    if (!refreshToken) {
+    if (!refreshTokenCookie) {
       throw new ErrorHTTP(401, `Вы не авторизованы`);
     }
-    const tokenFromDB = await tokenService.findRefreshToken(refreshToken);
+    const tokenFromDB = await tokenService.findRefreshToken(refreshTokenCookie);
 
-    const userData = tokenService.validateRefreshToken(refreshToken);
+    const userData = tokenService.validateRefreshToken(refreshTokenCookie);
 
     if (!tokenFromDB || !userData) {
       throw new ErrorHTTP(401, `Вы не авторизованы`);
@@ -94,13 +94,20 @@ class UserService {
     if (!user) {
       throw new ErrorHTTP(404, `Пользователь не существует`);
     }
+
     const accessToken = await tokenService.generateAccessToken({
       email: user.email,
       id: user._id,
       roles: user.roles,
     });
-
-    return accessToken;
+    const refreshToken = await tokenService.generateRefreshToken({
+      email: user.email,
+      id: user._id,
+      roles: user.roles,
+    });
+    const userDTO = new UserDTO(user);
+    await tokenService.saveRefreshToken(user.id, refreshToken);
+    return { tokens: { refreshToken, accessToken }, userDTO };
   }
 
   logout(refreshToken: string) {

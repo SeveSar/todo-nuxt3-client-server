@@ -4,7 +4,7 @@ import { tokenService } from '../tokens/tokens.services';
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
-    const token = req.cookies.accessToken;
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
       return next(new ErrorHTTP(401, 'Вы не авторизованы'));
     }

@@ -7,6 +7,7 @@ import { validationResult } from 'express-validator';
 
 import { UserAuthRequest, UserUpdateRequest } from './user.types';
 import { ACCESS_TOKEN_KEY, MAX_AGE_ACCESS_TOKEN, MAX_AGE_REFRESH_TOKEN, REFRESH_TOKEN_KEY } from './user.constants';
+import { UserDTO } from './user.dto';
 
 class UserController {
   // async register(req: Request<{}, {}, UserAuthRequest>, res: Response, next: NextFunction) {
@@ -54,21 +55,21 @@ class UserController {
           secure: true,
           sameSite: 'none',
           maxAge: MAX_AGE_REFRESH_TOKEN,
-          path: '/'
+          path: '/',
         });
       }
 
-      res.cookie(ACCESS_TOKEN_KEY, accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: MAX_AGE_ACCESS_TOKEN,
-        path: '/'
-      });
+      // res.cookie(ACCESS_TOKEN_KEY, accessToken, {
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: 'none',
+      //   maxAge: MAX_AGE_ACCESS_TOKEN,
+      //   path: '/',
+      // });
 
       // await basketService.createOrUpdateBasket(userDTO, cart);
 
-      return res.json(userDTO);
+      return res.json({ userDTO, accessToken });
     } catch (e) {
       console.dir(e);
       loggerService.err(`[Login]: ${e}`);
@@ -100,17 +101,16 @@ class UserController {
   async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const { refreshToken } = req.cookies;
-      const accessToken = await userService.refresh(refreshToken);
-
-      res.cookie(ACCESS_TOKEN_KEY, accessToken, {
+      const { tokens, userDTO } = await userService.refresh(refreshToken);
+      res.cookie(REFRESH_TOKEN_KEY, tokens.refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: MAX_AGE_ACCESS_TOKEN,
-        path: '/'
+        maxAge: MAX_AGE_REFRESH_TOKEN,
       });
       return res.json({
-        message: 'Токены обновлены',
+        accessToken: tokens.accessToken,
+        user: userDTO,
       });
     } catch (e) {
       loggerService.err(`[Login]: ${e}`);
@@ -118,12 +118,16 @@ class UserController {
     }
   }
   async logout(req: Request, res: Response, next: NextFunction) {
-    console.log('logout, rrtrt')
     try {
       const { refreshToken } = req.cookies;
       await userService.logout(refreshToken);
-      res.clearCookie(REFRESH_TOKEN_KEY);
-      res.clearCookie(ACCESS_TOKEN_KEY);
+      res.clearCookie(REFRESH_TOKEN_KEY, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: MAX_AGE_REFRESH_TOKEN,
+      });
+      // res.clearCookie(ACCESS_TOKEN_KEY);
       return res.json({ success: true });
     } catch (e) {
       next(e);
