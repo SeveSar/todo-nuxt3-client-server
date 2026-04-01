@@ -2,6 +2,7 @@
     <div class="flex items-center border-b border-gray-200 py-4">
         <div class="flex items-center gap-1 grow">
             <UiCheckbox :model-value="item?.isCompleted"
+                :disabled="userStore.checkCanEditOrRemove(item.createdBy || '')"
                 @update:modelValue="$emit('edit-completed', { ...item, isCompleted: $event })">
             </UiCheckbox>
             <span>
