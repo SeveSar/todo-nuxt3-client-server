@@ -36,20 +36,15 @@ app.use('/api', router);
 
 app.use(errorMiddleware);
 
-// const start = async () => {
-//   try {
-//     await connectToMongoDB();
-//     app.listen(PORT, () => {
-//       loggerService.log(`Server has started on port: ${PORT}`);
-//     });
-//   } catch (e) {
-//     console.log(e)
-//     loggerService.err(e);
-//   }
-// };
-// Экспорт default для Vercel
-export default async (req: any, res: any) => {
-  await connectToMongoDB();
-  return app(req, res);
+const start = async () => {
+  try {
+    await connectToMongoDB();
+    app.listen(PORT, () => {
+      loggerService.log(`Server has started on port: ${PORT}`);
+    });
+  } catch (e) {
+    console.log(e)
+    loggerService.err(e);
+  }
 };
 // start();

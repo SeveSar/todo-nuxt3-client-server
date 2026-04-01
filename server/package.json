@@ -7,8 +7,8 @@
 		"node": ">=6.0.0"
 	},
 	"scripts": {
-		"start": "node dist/api/index.js",
-		"dev": "vercel dev",
+		"start": "node ./dist/api/index.js",
+		"dev": "nodemon",
 		"build": "tsc",
 		"v": "node -v",
 		"lint": "eslint src/**/*.ts",
