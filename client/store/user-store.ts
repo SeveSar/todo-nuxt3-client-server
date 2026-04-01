@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', () => {
         user.value = userData
     }
 
-    const login = async (data: { email: string; password: string; isRemember: boolean }) => {
+    const login = async (data: Record<string, any>) => {
         const user = await useTaskApi.login(data)
         setUser(user)
         return user

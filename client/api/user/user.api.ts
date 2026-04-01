@@ -4,7 +4,7 @@ export const useUserApi = () => {
     const { $api } = useNuxtApp()
 
     return {
-        login(data: { email: string; password: string; isRemember: boolean }) {
+        login(data: Record<string, any>) {
             return $api.post<IUser>('/auth/login', data)
         },
         loadUser() {
