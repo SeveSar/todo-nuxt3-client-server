@@ -16,7 +16,7 @@
   },
   "include": [
     "src",
-    "api"
+    "api/**/*"
   ],
   "exclude": [
     "node_modules",

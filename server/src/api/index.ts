@@ -47,5 +47,9 @@ const start = async () => {
     loggerService.err(e);
   }
 };
-
+// Экспорт default для Vercel
+export default async (req: any, res: any) => {
+  await connectToMongoDB();
+  return app(req, res);
+};
 start();
