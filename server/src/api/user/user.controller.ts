@@ -54,6 +54,7 @@ class UserController {
           secure: true,
           sameSite: 'none',
           maxAge: MAX_AGE_REFRESH_TOKEN,
+          path: '/'
         });
       }
 
@@ -62,6 +63,7 @@ class UserController {
         secure: true,
         sameSite: 'none',
         maxAge: MAX_AGE_ACCESS_TOKEN,
+        path: '/'
       });
 
       // await basketService.createOrUpdateBasket(userDTO, cart);
@@ -105,6 +107,7 @@ class UserController {
         secure: true,
         sameSite: 'none',
         maxAge: MAX_AGE_ACCESS_TOKEN,
+        path: '/'
       });
       return res.json({
         message: 'Токены обновлены',
