@@ -55,7 +55,7 @@ watch(() => props.activeTab, (val) => {
 
 
 const showAllText = computed(() => {
-    return !props.isShowAll ? ' Отобразить задачи всех пользователей' : 'Скрыть задачи всехпользователей'
+    return !props.isShowAll ? ' Отобразить задачи всех пользователей' : 'Скрыть задачи всех пользователей'
 })
 
 

@@ -1,24 +1,25 @@
 import { useUserStore } from '~/store/user-store'
 import type { AnyObject, HttpClient } from './types'
-let isRefreshing = false
+
+let refreshTokenRequest: Promise<void> | null = null
 
 const refreshToken = async () => {
-    if (isRefreshing) return
     const userStore = useUserStore()
     try {
-        isRefreshing = true
+        if (refreshTokenRequest === null) {
+            refreshTokenRequest = $fetch('/auth/refresh', {
+                baseURL: useRuntimeConfig().public.apiBaseURL,
+                credentials: 'include',
+            })
+        }
 
-        await $fetch('/auth/refresh', {
-            baseURL: useRuntimeConfig().public.apiBaseURL,
-            credentials: 'include',
-        })
+        await refreshTokenRequest
+        refreshTokenRequest = null
     }
     catch (e) {
         userStore.logout()
     }
-    finally {
-        isRefreshing = false
-    }
+
 }
 
 export const useHttp = (): HttpClient => {
