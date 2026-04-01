@@ -29,12 +29,11 @@ export const useUserStore = defineStore('user', () => {
             navigateTo({ name: 'index', query: { ...route.query } })
         }
         catch (e) {
-            console.log(e, 'trtrtrt')
+            navigateTo({ name: 'auth', })
         }
         finally {
             isLoggedIn.value = true
         }
-        return user
 
     }
     const logout = () => {
