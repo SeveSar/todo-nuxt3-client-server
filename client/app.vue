@@ -5,9 +5,6 @@ import { useUserStore } from './store/user-store';
 
 const userStore = useUserStore()
 
-onBeforeMount(() => {
-    userStore.loadUser()
-})
 
 </script>
 
