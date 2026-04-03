@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore()
 
   if (import.meta.client) {
-    await userStore.loadUser()
+    userStore.loadUser()
   }
 
   if (userStore.isLoggedIn && !userStore.user && to.name !== 'auth') {
