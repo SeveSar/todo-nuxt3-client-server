@@ -7,7 +7,8 @@
                         @update:model-value="emit('update:search', $event)"
                         placeholder="Поиск: Название/Описание/Приоритет">
                     </UiInput>
-                    <UiButton class="shrink-0 min-w-[333px]" @click=" emit('update:isShowAll')" variant="secondary">
+                    <UiButton class="shrink-0 min-w-[333px]" @click=" emit('update:isShowAll')" variant="secondary"
+                        v-if="!userStore.user?.user.roles.includes('ADMIN')">
                         {{ showAllText }}
                     </UiButton>
                     <UiSelect class="min-w-[280px]" :options="OPTIONS" v-model="selectedOption" option-label="label">
@@ -24,6 +25,7 @@ import UiTabs from '../ui/ui-tabs.vue'
 import UiSelect from '../ui/ui-select.vue'
 import UiInput from '../ui/ui-input.vue'
 import UiButton from '../ui/ui-button.vue'
+import { useUserStore } from '@/store/user-store'
 interface Props {
     activeTab: string | null | undefined,
     isShowAll: boolean | null | undefined,
@@ -31,6 +33,7 @@ interface Props {
 }
 const emit = defineEmits(['change', 'update:isShowAll', 'update:search'])
 const props = defineProps<Props>()
+const userStore = useUserStore()
 
 const TABS = [
     { id: '', label: 'Все задачи' },
