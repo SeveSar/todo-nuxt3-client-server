@@ -1,53 +1,53 @@
-import type { IUser } from "../types/user"
-import { useUserApi } from '@/api/user/user.api'
+import type { IUser } from '../types/user';
+import { useUserApi } from '@/api/user/user.api';
 
 
 export const useUserStore = defineStore('user', () => {
-    const useTaskApi = useUserApi()
-    const user = ref<IUser | null>(null)
-    const isLoggedIn = ref(false)
+    const useTaskApi = useUserApi();
+    const user = ref<IUser | null>(null);
+    const isLoggedIn = ref(false);
 
-    const route = useRoute()
+    const route = useRoute();
     const setUser = (userData: IUser) => {
-        user.value = userData
-    }
+        user.value = userData;
+    };
 
     const login = async (data: Record<string, any>) => {
-        const user = await useTaskApi.login(data)
-        setUser(user)
-        return user
-    }
+        const user = await useTaskApi.login(data);
+        setUser(user);
+        return user;
+    };
 
     const clearUser = () => {
-        user.value = null
-    }
+        user.value = null;
+    };
     const loadUser = async () => {
-        if (isLoggedIn.value) return
+        if (isLoggedIn.value) return;
         try {
-            const response = await useTaskApi.refresh()
+            const response = await useTaskApi.refresh();
 
-            setUser(response)
-            navigateTo({ name: 'index', query: { ...route.query } })
+            setUser(response);
+            navigateTo({ name: 'index', query: { ...route.query } });
         }
-        catch (e) {
-            navigateTo({ name: 'auth', })
+        catch {
+            navigateTo({ name: 'auth' });
         }
         finally {
-            isLoggedIn.value = true
+            isLoggedIn.value = true;
         }
 
-    }
+    };
     const logout = () => {
-        clearUser()
-        navigateTo('/auth')
-        return useTaskApi.logout()
-    }
+        clearUser();
+        navigateTo('/auth');
+        return useTaskApi.logout();
+    };
 
     const checkCanEditOrRemove = (createdBy: string | null) => {
-        if (!user.value?.user || !createdBy) return
+        if (!user.value?.user || !createdBy) return;
 
-        return !(user.value.user.id === createdBy || user.value?.user.roles.includes('ADMIN'))
-    }
+        return !(user.value.user.id === createdBy || user.value?.user.roles.includes('ADMIN'));
+    };
 
 
 
@@ -60,6 +60,6 @@ export const useUserStore = defineStore('user', () => {
         clearUser,
         loadUser,
         login,
-        checkCanEditOrRemove
-    }
-})
+        checkCanEditOrRemove,
+    };
+});

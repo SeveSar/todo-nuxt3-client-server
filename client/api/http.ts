@@ -1,31 +1,33 @@
-import { useUserStore } from '~/store/user-store'
-import type { AnyObject, HttpClient } from './types'
-import type { IUser } from '~/types/user'
+import { useUserStore } from '~/store/user-store';
+import type { AnyObject, HttpClient } from './types';
+import type { IUser } from '~/types/user';
 
-let refreshTokenRequest: Promise<IUser> | null = null
+import type { FetchError } from 'ofetch'
+
+let refreshTokenRequest: Promise<IUser> | null = null;
 
 const refreshToken = async () => {
-    const userStore = useUserStore()
+    const userStore = useUserStore();
     try {
         if (refreshTokenRequest === null) {
             refreshTokenRequest = $fetch<IUser>('/auth/refresh', {
                 baseURL: useRuntimeConfig().public.apiBaseURL,
                 credentials: 'include',
-            })
+            });
         }
 
-        const res = await refreshTokenRequest
-        refreshTokenRequest = null
-        return res
+        const res = await refreshTokenRequest;
+        refreshTokenRequest = null;
+        return res;
     }
-    catch (e) {
-        userStore.logout()
+    catch {
+        userStore.logout();
     }
 
-}
+};
 
 export const useHttp = (): HttpClient => {
-    const config = useRuntimeConfig()
+    const config = useRuntimeConfig();
 
     const request = async <T>(
         url: string,
@@ -33,35 +35,36 @@ export const useHttp = (): HttpClient => {
             method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
             query?: AnyObject
             body?: AnyObject,
-        } = {}
+        } = {},
     ): Promise<T> => {
         try {
-            const userStore = useUserStore()
+            const userStore = useUserStore();
             return await $fetch<T>(url, {
                 baseURL: config.public.apiBaseURL,
                 credentials: 'include',
                 headers: {
-                    Authorization: `Bearer ${userStore.user?.accessToken}`
+                    Authorization: `Bearer ${userStore.user?.accessToken}`,
                 },
-                ...options
-            })
-        } catch (e: any) {
-            if (e?.status === 401) {
-                const res = await refreshToken()
+                ...options,
+            });
+        } catch (e: unknown) {
+            const err = e as FetchError
+            if (err?.status === 401) {
+                const res = await refreshToken();
 
                 return await $fetch<T>(url, {
                     baseURL: config.public.apiBaseURL,
                     credentials: 'include',
                     headers: {
-                        Authorization: `Bearer ${res?.accessToken}`
+                        Authorization: `Bearer ${res?.accessToken}`,
                     },
                     ...options,
-                })
+                });
             }
 
-            throw e
+            throw e;
         }
-    }
+    };
 
     return {
         get: (url, query) =>
@@ -75,5 +78,5 @@ export const useHttp = (): HttpClient => {
 
         delete: (url, query) =>
             request(url, { method: 'DELETE', query }),
-    }
-}
+    };
+};

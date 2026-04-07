@@ -4,11 +4,13 @@
             {{ label }}
         </label>
 
-        <button type="button" @click="toggle" @keydown="handleKey" :disabled="disabled" class="w-full text-left px-3 py-2 border rounded-lg bg-white focus:outline-none
+        <button
+type="button" :disabled="disabled" class="w-full text-left px-3 py-2 border rounded-lg bg-white focus:outline-none
              transition focus:ring-2 focus:ring-blue-500
              disabled:bg-gray-100 disabled:cursor-not-allowed
              flex justify-between items-center"
-            :class="[error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300']">
+            :class="[error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300']" @click="toggle"
+            @keydown="handleKey">
             <span>{{ selectedLabel || placeholder }}</span>
             <svg class="w-4 h-4 ml-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -16,12 +18,12 @@
         </button>
 
         <ul v-if="open" class="absolute z-20 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-auto">
-            <li v-for="(opt, index) in options" :key="index" @click="select(opt)" @mouseenter="highlightedIndex = index"
-                :class="[
-                    'px-3 py-2 cursor-pointer',
-                    highlightedIndex === index ? 'bg-blue-100' : '',
-                    isSelected(opt) ? 'bg-blue-200 font-semibold' : ''
-                ]">
+            <li
+v-for="(opt, index) in options" :key="index" :class="[
+                'px-3 py-2 cursor-pointer',
+                highlightedIndex === index ? 'bg-blue-100' : '',
+                isSelected(opt) ? 'bg-blue-200 font-semibold' : ''
+            ]" @click="select(opt)" @mouseenter="highlightedIndex = index">
                 {{ getOptionLabel(opt) }}
             </li>
         </ul>
@@ -31,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
 
 interface Props {
     modelValue: any
@@ -44,87 +46,87 @@ interface Props {
     optionValue?: string
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<{ (e: 'update:modelValue', value: any): void }>()
+const props = defineProps<Props>();
+const emit = defineEmits<{ (e: 'update:modelValue', value: any): void }>();
 
-const open = ref(false)
-const highlightedIndex = ref(-1)
-const containerRef = ref<HTMLElement | null>(null)
+const open = ref(false);
+const highlightedIndex = ref(-1);
+const containerRef = ref<HTMLElement | null>(null);
 
 
 const getOptionLabel = (opt: any) => {
-    const field = props.optionLabel || 'label'
-    return opt[field] ?? ''
-}
+    const field = props.optionLabel || 'label';
+    return opt[field] ?? '';
+};
 
 
 const selectedLabel = computed(() => {
-    if (!props.modelValue) return ''
+    if (!props.modelValue) return '';
     if (props.optionValue) {
-        const opt = props.options.find(o => o[props.optionValue!] === props.modelValue)
-        return opt ? getOptionLabel(opt) : ''
+        const opt = props.options.find(o => o[props.optionValue!] === props.modelValue);
+        return opt ? getOptionLabel(opt) : '';
     } else {
-        return getOptionLabel(props.modelValue)
+        return getOptionLabel(props.modelValue);
     }
-})
+});
 
 const isSelected = (opt: any) => {
     if (props.optionValue) {
-        return opt[props.optionValue] === props.modelValue
+        return opt[props.optionValue] === props.modelValue;
     } else {
-        return JSON.stringify(opt) === JSON.stringify(props.modelValue)
+        return JSON.stringify(opt) === JSON.stringify(props.modelValue);
     }
-}
+};
 
 const toggle = () => {
-    if (props.disabled) return
-    open.value = !open.value
-}
+    if (props.disabled) return;
+    open.value = !open.value;
+};
 
 const select = (opt: any) => {
     if (props.optionValue) {
-        emit('update:modelValue', opt[props.optionValue])
+        emit('update:modelValue', opt[props.optionValue]);
     } else {
-        emit('update:modelValue', opt)
+        emit('update:modelValue', opt);
     }
-    open.value = false
-}
+    open.value = false;
+};
 
 const handleKey = (e: KeyboardEvent) => {
     if (!open.value) {
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            open.value = true
-            e.preventDefault()
+            open.value = true;
+            e.preventDefault();
         }
-        return
+        return;
     }
 
     if (e.key === 'ArrowDown') {
-        highlightedIndex.value = (highlightedIndex.value + 1) % props.options.length
-        e.preventDefault()
+        highlightedIndex.value = (highlightedIndex.value + 1) % props.options.length;
+        e.preventDefault();
     } else if (e.key === 'ArrowUp') {
-        highlightedIndex.value = (highlightedIndex.value - 1 + props.options.length) % props.options.length
-        e.preventDefault()
+        highlightedIndex.value = (highlightedIndex.value - 1 + props.options.length) % props.options.length;
+        e.preventDefault();
     } else if (e.key === 'Enter') {
         if (highlightedIndex.value >= 0 && highlightedIndex.value < props.options.length) {
-            select(props.options[highlightedIndex.value])
+            select(props.options[highlightedIndex.value]);
         }
-        e.preventDefault()
+        e.preventDefault();
     } else if (e.key === 'Escape') {
-        open.value = false
+        open.value = false;
     }
-}
+};
 
 const handleClickOutside = (e: MouseEvent) => {
     if (containerRef.value && !containerRef.value.contains(e.target as Node)) {
-        open.value = false
+        open.value = false;
     }
-}
+};
 
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
+onMounted(() => document.addEventListener('click', handleClickOutside));
+onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside));
 
 watch(open, (v) => {
-    if (!v) highlightedIndex.value = -1
-})
+    if (!v) highlightedIndex.value = -1;
+});
 </script>

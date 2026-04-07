@@ -5,5 +5,5 @@
 </template>
 
 <script setup lang="ts">
-const attrs = useAttrs()
+const attrs = useAttrs();
 </script>

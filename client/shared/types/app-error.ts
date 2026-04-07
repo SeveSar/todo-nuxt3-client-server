@@ -1,2 +1,2 @@
-import type { FetchError } from 'ofetch'
+import type { FetchError } from 'ofetch';
 export type AppError = Error | FetchError

@@ -1,18 +1,16 @@
 <template>
     <div class="border-t flex justify-between items-center gap-4 items-center justify-center">
-        <UiTabs :tabs="TABS" v-model="activeTab">
+        <UiTabs v-model="activeTabLocal" :tabs="TABS">
             <template #right-content>
                 <div class="flex items-center gap-3">
                     <UiInput custom-class="grow min-w-[500px]" :model-value="search"
-                        @update:model-value="emit('update:search', $event)"
-                        placeholder="Поиск: Название/Описание/Приоритет">
-                    </UiInput>
-                    <UiButton class="shrink-0 min-w-[333px]" @click=" emit('update:isShowAll')" variant="secondary"
-                        v-if="!userStore.user?.user.roles.includes('ADMIN')">
+                        placeholder="Поиск: Название/Описание/Приоритет"
+                        @update:model-value="emit('update:search', $event)" />
+                    <UiButton v-if="!userStore.user?.user.roles.includes('ADMIN')" class="shrink-0 min-w-[333px]"
+                        variant="secondary" @click=" emit('update:isShowAll')">
                         {{ showAllText }}
                     </UiButton>
-                    <UiSelect class="min-w-[280px]" :options="OPTIONS" v-model="selectedOption" option-label="label">
-                    </UiSelect>
+                    <UiSelect v-model="selectedOption" class="min-w-[280px]" :options="OPTIONS" option-label="label" />
 
                 </div>
             </template>
@@ -21,25 +19,25 @@
 </template>
 
 <script setup lang="ts">
-import UiTabs from '../ui/ui-tabs.vue'
-import UiSelect from '../ui/ui-select.vue'
-import UiInput from '../ui/ui-input.vue'
-import UiButton from '../ui/ui-button.vue'
-import { useUserStore } from '@/store/user-store'
+import UiTabs from '../ui/ui-tabs.vue';
+import UiSelect from '../ui/ui-select.vue';
+import UiInput from '../ui/ui-input.vue';
+import UiButton from '../ui/ui-button.vue';
+import { useUserStore } from '@/store/user-store';
 interface Props {
     activeTab: string | null | undefined,
     isShowAll: boolean | null | undefined,
     search: string | null
 }
-const emit = defineEmits(['change', 'update:isShowAll', 'update:search'])
-const props = defineProps<Props>()
-const userStore = useUserStore()
+const emit = defineEmits(['change', 'update:isShowAll', 'update:search']);
+const props = defineProps<Props>();
+const userStore = useUserStore();
 
 const TABS = [
     { id: '', label: 'Все задачи' },
     { id: 'active', label: 'Активные' },
-    { id: 'completed', label: 'Выполненные' }
-]
+    { id: 'completed', label: 'Выполненные' },
+];
 const OPTIONS = [
     { label: 'По дате (по возрастанию)', field: 'dueDate', order: 'asc' },
     { label: 'По дате (по убыванию)', field: 'dueDate', order: 'desc' },
@@ -47,29 +45,28 @@ const OPTIONS = [
     { label: 'По названию (по убыванию)', field: 'title', order: 'desc' },
     { label: 'По приоритету (по возрастанию)', field: 'priority', order: 'asc' },
     { label: 'По приоритету (по убыванию)', field: 'priority', order: 'desc' },
-]
+];
 
-const activeTab = ref<Props['activeTab']>(TABS[0].id)
+const activeTabLocal = ref<Props['activeTab']>(TABS[0].id);
 watch(() => props.activeTab, (val) => {
-    activeTab.value = val
+    activeTabLocal.value = val;
 }, {
-    immediate: true
-})
+    immediate: true,
+});
 
 
 const showAllText = computed(() => {
-    return !props.isShowAll ? ' Отобразить задачи всех пользователей' : 'Скрыть задачи всех пользователей'
-})
+    return !props.isShowAll ? ' Отобразить задачи всех пользователей' : 'Скрыть задачи всех пользователей';
+});
 
 
-const selectedOption = ref(OPTIONS[0])
+const selectedOption = ref(OPTIONS[0]);
 
 
-watch([selectedOption, activeTab], () => {
-    console.log(selectedOption.value)
-    const sortValue = selectedOption.value
-    emit('change', { filter: activeTab.value, sortBy: sortValue.field, sortOrder: sortValue.order })
-}, { deep: true })
+watch([selectedOption, activeTabLocal], () => {
+    const sortValue = selectedOption.value;
+    emit('change', { filter: activeTabLocal.value, sortBy: sortValue.field, sortOrder: sortValue.order });
+}, { deep: true });
 </script>
 
 <style scoped></style>

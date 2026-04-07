@@ -1,75 +1,73 @@
-import { useRoute, useRouter } from '#app'
-import { watch } from 'vue'
-import type { ITaskQueries } from '~/types/task'
+import { useRoute } from '#app';
+import { watch } from 'vue';
 
 
 export function useQuerySync<T extends Record<string, any>>(
     state: Ref<T>,
-    defaults: T
+    defaults: T,
 ) {
-    const route = useRoute()
-    const router = useRouter()
+    const route = useRoute();
 
     const parseQuery = (query: Record<string, any>) => {
         Object.keys(defaults).forEach((key) => {
-            const typedKey = key as keyof T
-            const value = query[key]
+            const typedKey = key as keyof T;
+            const value = query[key];
 
             if (value === undefined) {
-                state.value[typedKey] = defaults[key]
-                return
+                state.value[typedKey] = defaults[key];
+                return;
             }
 
             if (typeof defaults[key] === 'number') {
-                state.value[typedKey] = Number(value) as T[keyof T]
+                state.value[typedKey] = Number(value) as T[keyof T];
             } else if (typeof defaults[key] === 'boolean') {
-                state.value[typedKey] = (value === 'true') as T[keyof T]
+                state.value[typedKey] = (value === 'true') as T[keyof T];
             } else {
-                state.value[typedKey] = value as T[keyof T]
+                state.value[typedKey] = value as T[keyof T];
             }
-        })
-    }
+        });
+    };
 
     const buildQuery = () => {
-        const query: Record<string, any> = {}
+        const query: Record<string, any> = {};
 
         Object.keys(state.value).forEach((key) => {
-            const value = state.value[key]
-            const def = defaults[key]
+            const value = state.value[key];
+            const def = defaults[key];
 
 
-            if (value === def || value === null) return
+            if (value === def || value === null) return;
 
-            query[key] = String(value)
-        })
-        console.log(state.value, 'build quer')
+            query[key] = String(value);
+        });
+        console.log(state.value, 'build quer');
 
-        return query
-    }
+        return query;
+    };
 
     const updateQuery = () => {
-        const query = buildQuery()
+        const query = buildQuery();
         navigateTo({
-            query
-        }, { replace: true })
-    }
+            query,
+        }, { replace: true });
+    };
 
-    parseQuery(route.query)
+    parseQuery(route.query);
 
 
     watch(
         () => route.query,
         (q) => parseQuery(q),
-        { deep: true }
-    )
+        { deep: true },
+    );
 
 
     watch(
         () => state.value,
         () => {
-            updateQuery()
+            updateQuery();
 
         },
-        { deep: true }
-    )
+        { deep: true },
+    );
 }

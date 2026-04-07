@@ -1,5 +1,4 @@
-import { number } from "yup";
-import type { ENUM_PRIORITY } from "../configs/task.config";
+import type { ENUM_PRIORITY } from '../configs/task.config';
 
 
 export type TypePriority = typeof ENUM_PRIORITY[keyof typeof ENUM_PRIORITY];
@@ -12,7 +11,7 @@ export interface ITask {
     isCompleted: boolean;
     createdBy: string | null;
     priority: TypePriority;
-    meta: {}
+    meta: object
 }
 
 export interface ITaskResponse {

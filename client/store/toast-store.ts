@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 export const useToastStore = defineStore('toast', () => {
     type Toast = {
@@ -8,26 +8,26 @@ export const useToastStore = defineStore('toast', () => {
         duration?: number
     }
 
-    const toasts = ref<Toast[]>([])
+    const toasts = ref<Toast[]>([]);
 
     const addToast = (toast: Omit<Toast, 'id'>) => {
         const newToast: Toast = {
             id: toasts.value.length + 1,
             type: 'info',
             duration: 3000,
-            ...toast
-        }
+            ...toast,
+        };
 
-        toasts.value.push(newToast)
+        toasts.value.push(newToast);
 
         setTimeout(() => {
-            removeToast(newToast.id)
-        }, newToast.duration)
-    }
+            removeToast(newToast.id);
+        }, newToast.duration);
+    };
 
     const removeToast = (toastId: number) => {
-        toasts.value = toasts.value.filter(t => t.id !== toastId)
-    }
+        toasts.value = toasts.value.filter(t => t.id !== toastId);
+    };
 
 
 
@@ -35,5 +35,5 @@ export const useToastStore = defineStore('toast', () => {
         toasts,
         addToast,
         removeToast,
-    }
-})
+    };
+});
