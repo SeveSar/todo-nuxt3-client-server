@@ -1,22 +1,22 @@
 import type { ITask, ITaskQueries, ITaskResponse } from '@/types/task';
 
-
-export const useTaskApi = () => {
+export function useTaskApi() {
     const { $api } = useNuxtApp();
 
     return {
         fetchAll(
-            { sortBy, sortOrder, filter, isShowAll, page, limit, search }: ITaskQueries) {
+            { sortBy, sortOrder, filter, isShowAll, page, limit, search }: ITaskQueries,
+        ) {
             const actualParams = {
                 page,
                 limit,
                 search,
             } as ITaskQueries;
-            if (sortBy) actualParams.sortBy = sortBy;
-            if (sortOrder) actualParams.sortOrder = sortOrder;
-            if (filter) actualParams.filter = filter;
-            if (isShowAll) actualParams.isShowAll = isShowAll;
-            if (search) actualParams.search = search;
+            if (sortBy) { actualParams.sortBy = sortBy; }
+            if (sortOrder) { actualParams.sortOrder = sortOrder; }
+            if (filter) { actualParams.filter = filter; }
+            if (isShowAll) { actualParams.isShowAll = isShowAll; }
+            if (search) { actualParams.search = search; }
             return $api.get<ITaskResponse>('/tasks', actualParams);
         },
         updateTask(id: string, data: Partial<ITask>) {
@@ -29,4 +29,4 @@ export const useTaskApi = () => {
             return $api.delete(`/tasks/${id}`);
         },
     };
-};
+}

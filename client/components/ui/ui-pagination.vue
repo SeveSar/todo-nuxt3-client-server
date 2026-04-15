@@ -1,29 +1,3 @@
-<template>
-    <div class="flex items-center justify-center gap-2">
-
-        <button
-class="px-3 py-1 border rounded disabled:opacity-50" :disabled="currentPage === 1"
-            @click="changePage(currentPage - 1)">
-            Prev
-        </button>
-
-
-        <button
-v-for="page in pages" :key="page" class="px-3 py-1 border rounded" :class="{
-            'bg-blue-500 text-white': page === currentPage
-        }" @click="changePage(page)">
-            {{ page }}
-        </button>
-
-
-        <button
-class="px-3 py-1 border rounded disabled:opacity-50" :disabled="currentPage === totalPages"
-            @click="changePage(currentPage + 1)">
-            Next
-        </button>
-    </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue';
 
@@ -66,7 +40,7 @@ const pages = computed(() => {
         start = total - visible + 1;
     }
 
-    if (start < 1) start = 1;
+    if (start < 1) { start = 1; }
 
     const result: number[] = [];
     for (let i = start; i <= end; i++) {
@@ -77,7 +51,33 @@ const pages = computed(() => {
 });
 
 function changePage(page: number) {
-    if (page < 1 || page > totalPages.value) return;
+    if (page < 1 || page > totalPages.value) { return; }
     emit('update:currentPage', page);
 }
 </script>
+
+<template>
+    <div class="flex items-center justify-center gap-2">
+        <button
+            class="px-3 py-1 border rounded disabled:opacity-50" :disabled="currentPage === 1"
+            @click="changePage(currentPage - 1)"
+        >
+            Prev
+        </button>
+
+        <button
+            v-for="page in pages" :key="page" class="px-3 py-1 border rounded" :class="{
+                'bg-blue-500 text-white': page === currentPage,
+            }" @click="changePage(page)"
+        >
+            {{ page }}
+        </button>
+
+        <button
+            class="px-3 py-1 border rounded disabled:opacity-50" :disabled="currentPage === totalPages"
+            @click="changePage(currentPage + 1)"
+        >
+            Next
+        </button>
+    </div>
+</template>

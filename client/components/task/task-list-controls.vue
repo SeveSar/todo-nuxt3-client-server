@@ -1,36 +1,17 @@
-<template>
-    <div class="border-t flex justify-between items-center gap-4 items-center justify-center">
-        <UiTabs v-model="activeTabLocal" :tabs="TABS">
-            <template #right-content>
-                <div class="flex items-center gap-3">
-                    <UiInput custom-class="grow min-w-[500px]" :model-value="search"
-                        placeholder="Поиск: Название/Описание/Приоритет"
-                        @update:model-value="emit('update:search', $event)" />
-                    <UiButton v-if="!userStore.user?.user.roles.includes('ADMIN')" class="shrink-0 min-w-[333px]"
-                        variant="secondary" @click=" emit('update:isShowAll')">
-                        {{ showAllText }}
-                    </UiButton>
-                    <UiSelect v-model="selectedOption" class="min-w-[280px]" :options="OPTIONS" option-label="label" />
-
-                </div>
-            </template>
-        </UiTabs>
-    </div>
-</template>
-
 <script setup lang="ts">
-import UiTabs from '../ui/ui-tabs.vue';
-import UiSelect from '../ui/ui-select.vue';
-import UiInput from '../ui/ui-input.vue';
-import UiButton from '../ui/ui-button.vue';
 import { useUserStore } from '@/store/user-store';
+import UiButton from '../ui/ui-button.vue';
+import UiInput from '../ui/ui-input.vue';
+import UiSelect from '../ui/ui-select.vue';
+import UiTabs from '../ui/ui-tabs.vue';
+
 interface Props {
-    activeTab: string | null | undefined,
-    isShowAll: boolean | null | undefined,
+    activeTab: string | null | undefined
+    isShowAll: boolean | null | undefined
     search: string | null
 }
-const emit = defineEmits(['change', 'update:isShowAll', 'update:search']);
 const props = defineProps<Props>();
+const emit = defineEmits(['change', 'update:isShowAll', 'update:search']);
 const userStore = useUserStore();
 
 const TABS = [
@@ -54,19 +35,41 @@ watch(() => props.activeTab, (val) => {
     immediate: true,
 });
 
-
 const showAllText = computed(() => {
     return !props.isShowAll ? ' Отобразить задачи всех пользователей' : 'Скрыть задачи всех пользователей';
 });
 
-
 const selectedOption = ref(OPTIONS[0]);
-
 
 watch([selectedOption, activeTabLocal], () => {
     const sortValue = selectedOption.value;
     emit('change', { filter: activeTabLocal.value, sortBy: sortValue.field, sortOrder: sortValue.order });
 }, { deep: true });
 </script>
+
+<template>
+    <div class="border-t flex justify-between items-center gap-4 items-center justify-center">
+        <UiTabs v-model="activeTabLocal" :tabs="TABS">
+            <template #right-content>
+                <!-- <ClientOnly> -->
+                <div class="flex items-center gap-3">
+                    <UiInput
+                        custom-class="grow min-w-[500px]" :model-value="search"
+                        placeholder="Поиск: Название/Описание/Приоритет"
+                        @update:model-value="emit('update:search', $event)"
+                    />
+                    <UiButton
+                        v-if="!userStore.user?.user.roles.includes('ADMIN')" class="shrink-0 min-w-[333px]"
+                        variant="secondary" @click=" emit('update:isShowAll')"
+                    >
+                        {{ showAllText }}
+                    </UiButton>
+                    <UiSelect v-model="selectedOption" class="min-w-[280px]" :options="OPTIONS" option-label="label" />
+                </div>
+                <!-- </ClientOnly> -->
+            </template>
+        </UiTabs>
+    </div>
+</template>
 
 <style scoped></style>

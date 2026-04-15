@@ -1,7 +1,6 @@
 import { useRoute } from '#app';
 import { watch } from 'vue';
 
-
 export function useQuerySync<T extends Record<string, any>>(
     state: Ref<T>,
     defaults: T,
@@ -20,9 +19,11 @@ export function useQuerySync<T extends Record<string, any>>(
 
             if (typeof defaults[key] === 'number') {
                 state.value[typedKey] = Number(value) as T[keyof T];
-            } else if (typeof defaults[key] === 'boolean') {
+            }
+            else if (typeof defaults[key] === 'boolean') {
                 state.value[typedKey] = (value === 'true') as T[keyof T];
-            } else {
+            }
+            else {
                 state.value[typedKey] = value as T[keyof T];
             }
         });
@@ -35,8 +36,7 @@ export function useQuerySync<T extends Record<string, any>>(
             const value = state.value[key];
             const def = defaults[key];
 
-
-            if (value === def || value === null) return;
+            if (value === def || value === null) { return; }
 
             query[key] = String(value);
         });
@@ -54,19 +54,16 @@ export function useQuerySync<T extends Record<string, any>>(
 
     parseQuery(route.query);
 
-
     watch(
         () => route.query,
-        (q) => parseQuery(q),
+        q => parseQuery(q),
         { deep: true },
     );
-
 
     watch(
         () => state.value,
         () => {
             updateQuery();
-
         },
         { deep: true },
     );

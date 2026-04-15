@@ -1,22 +1,4 @@
-<template>
-    <div class="flex border-b border-gray-200 w-full">
-        <div class="flex space-x-4 grow">
-            <button
-v-for="tab in tabs" :key="tab.id" :class="[
-                'pb-5 pt-5 px-4 text-md font-medium border-b-2',
-                activeTab === tab.id
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-            ]" @click="selectTab(tab.id)">
-                {{ tab.label }}
-            </button>
-        </div>
-        <slot name="right-content"/>
-    </div>
-</template>
-
 <script lang="ts" setup>
-
 interface Tab {
     id: string | number
     label: string
@@ -30,14 +12,12 @@ interface TabsProps {
 const props = defineProps<TabsProps>();
 const emit = defineEmits<{ (e: 'update:modelValue', value: string | number | null): void }>();
 
-
 const activeTab = ref(props.modelValue ?? (props.tabs[0]?.id ?? ''));
-
 
 watch(
     () => props.modelValue,
     (newVal) => {
-        if (newVal !== undefined && newVal !== null) activeTab.value = newVal;
+        if (newVal !== undefined && newVal !== null) { activeTab.value = newVal; }
     },
 );
 
@@ -46,6 +26,23 @@ function selectTab(id: string | number) {
     emit('update:modelValue', id);
 }
 </script>
+
+<template>
+    <div class="flex border-b border-gray-200 w-full">
+        <div class="flex space-x-4 grow">
+            <button
+                v-for="tab in tabs" :key="tab.id" class="pb-5 pt-5 px-4 text-md font-medium border-b-2" :class="[
+                    activeTab === tab.id
+                        ? 'border-blue-600 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700',
+                ]" @click="selectTab(tab.id)"
+            >
+                {{ tab.label }}
+            </button>
+        </div>
+        <slot name="right-content" />
+    </div>
+</template>
 
 <style scoped>
 button {

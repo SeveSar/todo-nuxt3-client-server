@@ -1,13 +1,11 @@
 import type { IUser } from '../types/user';
 import { useUserApi } from '@/api/user/user.api';
 
-
 export const useUserStore = defineStore('user', () => {
     const useTaskApi = useUserApi();
     const user = ref<IUser | null>(null);
     const isLoggedIn = ref(false);
 
-    const route = useRoute();
     const setUser = (userData: IUser) => {
         user.value = userData;
     };
@@ -22,20 +20,24 @@ export const useUserStore = defineStore('user', () => {
         user.value = null;
     };
     const loadUser = async () => {
-        if (isLoggedIn.value) return;
+        if (isLoggedIn.value) { return; }
         try {
             const response = await useTaskApi.refresh();
 
             setUser(response);
-            navigateTo({ name: 'index', query: { ...route.query } });
+            return true;
         }
-        catch {
-            navigateTo({ name: 'auth' });
+        catch (e: unknown) {
+            if (e instanceof Error) {
+                throw e;
+            }
+            else {
+                throw new Error(String(e));
+            }
         }
         finally {
             isLoggedIn.value = true;
         }
-
     };
     const logout = () => {
         clearUser();
@@ -44,13 +46,10 @@ export const useUserStore = defineStore('user', () => {
     };
 
     const checkCanEditOrRemove = (createdBy: string | null) => {
-        if (!user.value?.user || !createdBy) return;
+        if (!user.value?.user || !createdBy) { return; }
 
         return !(user.value.user.id === createdBy || user.value?.user.roles.includes('ADMIN'));
     };
-
-
-
 
     return {
         user,

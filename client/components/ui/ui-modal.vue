@@ -1,19 +1,81 @@
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+
+type Size = 'sm' | 'md' | 'lg' | 'xl';
+
+interface Props {
+    title?: string
+    size?: Size
+    width?: string
+}
+
+const props = defineProps<Props>();
+
+const emit = defineEmits<{
+    (e: 'close'): void
+}>();
+
+const isVisible = ref(false);
+const isRendered = ref(true);
+
+onMounted(() => {
+    requestAnimationFrame(() => {
+        isVisible.value = true;
+    });
+});
+
+function close() {
+    isVisible.value = false;
+}
+
+function onAfterLeave() {
+    isRendered.value = false;
+    emit('close');
+}
+
+function handleKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') { close(); }
+}
+
+onMounted(() => window.addEventListener('keydown', handleKey));
+onBeforeUnmount(() => window.removeEventListener('keydown', handleKey));
+
+const modalWidthClass = computed(() => {
+    if (props.width) { return ''; }
+    const sizeMap: Record<Size, string> = {
+        sm: 'max-w-sm',
+        md: 'max-w-md',
+        lg: 'max-w-lg',
+        xl: 'max-w-xl',
+    };
+    return props.size ? sizeMap[props.size] : sizeMap.md;
+});
+
+const modalStyle = computed(() => {
+    return props.width ? { width: props.width } : {};
+});
+</script>
+
 <template>
     <Teleport to="body">
         <Transition name="modal-fade" @after-leave="onAfterLeave">
             <div v-show="isVisible" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="close">
                 <div
-class="relative bg-white rounded-xl w-full min-w-[300px] shadow-2xl" :class="modalWidthClass"
-                    :style="modalStyle">
+                    class="relative bg-white rounded-xl w-full min-w-[300px] shadow-2xl" :class="modalWidthClass"
+                    :style="modalStyle"
+                >
                     <button
-class="absolute top-3 right-3 z-10 text-gray-500 hover:text-black transition"
-                        @click="close">
+                        class="absolute top-3 right-3 z-10 text-gray-500 hover:text-black transition"
+                        @click="close"
+                    >
                         ✕
                     </button>
 
                     <div v-if="title || $slots.header" class="flex items-center pr-10 px-6 py-4 border-b">
                         <div class="text-3xl font-semibold">
-                            <slot name="header">{{ title }}</slot>
+                            <slot name="header">
+                                {{ title }}
+                            </slot>
                         </div>
                     </div>
 
@@ -29,65 +91,6 @@ class="absolute top-3 right-3 z-10 text-gray-500 hover:text-black transition"
         </Transition>
     </Teleport>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
-
-type Size = 'sm' | 'md' | 'lg' | 'xl'
-
-interface Props {
-    title?: string
-    size?: Size
-    width?: string
-}
-
-const props = defineProps<Props>();
-
-const emit = defineEmits<{
-    (e: 'close'): void
-}>();
-
-
-const isVisible = ref(false);
-const isRendered = ref(true);
-
-onMounted(() => {
-    requestAnimationFrame(() => {
-        isVisible.value = true;
-    });
-});
-
-const close = () => {
-    isVisible.value = false;
-};
-
-const onAfterLeave = () => {
-    isRendered.value = false;
-    emit('close');
-};
-
-const handleKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') close();
-};
-
-onMounted(() => window.addEventListener('keydown', handleKey));
-onBeforeUnmount(() => window.removeEventListener('keydown', handleKey));
-
-const modalWidthClass = computed(() => {
-    if (props.width) return '';
-    const sizeMap: Record<Size, string> = {
-        sm: 'max-w-sm',
-        md: 'max-w-md',
-        lg: 'max-w-lg',
-        xl: 'max-w-xl',
-    };
-    return props.size ? sizeMap[props.size] : sizeMap['md'];
-});
-
-const modalStyle = computed(() => {
-    return props.width ? { width: props.width } : {};
-});
-</script>
 
 <style scoped>
 .modal-fade-enter-active,

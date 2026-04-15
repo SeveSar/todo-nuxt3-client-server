@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 
 export const useToastStore = defineStore('toast', () => {
-    type Toast = {
+    interface Toast {
         id: number
         message: string
         type?: 'success' | 'error' | 'info'
@@ -9,6 +9,9 @@ export const useToastStore = defineStore('toast', () => {
     }
 
     const toasts = ref<Toast[]>([]);
+    const removeToast = (toastId: number) => {
+        toasts.value = toasts.value.filter(t => t.id !== toastId);
+    };
 
     const addToast = (toast: Omit<Toast, 'id'>) => {
         const newToast: Toast = {
@@ -24,12 +27,6 @@ export const useToastStore = defineStore('toast', () => {
             removeToast(newToast.id);
         }, newToast.duration);
     };
-
-    const removeToast = (toastId: number) => {
-        toasts.value = toasts.value.filter(t => t.id !== toastId);
-    };
-
-
 
     return {
         toasts,

@@ -1,19 +1,18 @@
-import { useUserStore } from '~/store/user-store';
+import type { FetchError } from 'ofetch';
 import type { AnyObject, HttpClient } from './types';
 import type { IUser } from '~/types/user';
 
-import type { FetchError } from 'ofetch'
+import { useUserStore } from '~/store/user-store';
+import { useUserApi } from './user/user.api';
 
 let refreshTokenRequest: Promise<IUser> | null = null;
 
-const refreshToken = async () => {
+async function refreshToken() {
     const userStore = useUserStore();
+    const userApi = useUserApi();
     try {
         if (refreshTokenRequest === null) {
-            refreshTokenRequest = $fetch<IUser>('/auth/refresh', {
-                baseURL: useRuntimeConfig().public.apiBaseURL,
-                credentials: 'include',
-            });
+            refreshTokenRequest = userApi.refresh();
         }
 
         const res = await refreshTokenRequest;
@@ -23,10 +22,9 @@ const refreshToken = async () => {
     catch {
         userStore.logout();
     }
+}
 
-};
-
-export const useHttp = (): HttpClient => {
+export function useHttp(): HttpClient {
     const config = useRuntimeConfig();
 
     const request = async <T>(
@@ -34,7 +32,7 @@ export const useHttp = (): HttpClient => {
         options: {
             method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
             query?: AnyObject
-            body?: AnyObject,
+            body?: AnyObject
         } = {},
     ): Promise<T> => {
         try {
@@ -47,11 +45,14 @@ export const useHttp = (): HttpClient => {
                 },
                 ...options,
             });
-        } catch (e: unknown) {
-            const err = e as FetchError
+        }
+        catch (e: unknown) {
+            const err = e as FetchError;
+            const userStore = useUserStore();
             if (err?.status === 401) {
                 const res = await refreshToken();
-
+                if (!res) { return Promise.reject(e); }
+                userStore.setUser(res);
                 return await $fetch<T>(url, {
                     baseURL: config.public.apiBaseURL,
                     credentials: 'include',
@@ -62,7 +63,7 @@ export const useHttp = (): HttpClient => {
                 });
             }
 
-            throw e;
+            return Promise.reject(e);
         }
     };
 
@@ -79,4 +80,4 @@ export const useHttp = (): HttpClient => {
         delete: (url, query) =>
             request(url, { method: 'DELETE', query }),
     };
-};
+}

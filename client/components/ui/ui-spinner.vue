@@ -1,11 +1,4 @@
-<template>
-    <div class="flex justify-center items-center">
-        <div class="border-l-transparent border-r-transparent rounded-full animate-spin" :class="`${size} ${color}`"/>
-    </div>
-</template>
-
 <script setup>
-
 defineProps({
     size: {
         type: String,
@@ -16,5 +9,10 @@ defineProps({
         default: 'border-t-blue-500 border-b-blue-500',
     },
 });
-
 </script>
+
+<template>
+    <div class="flex justify-center items-center">
+        <div class="border-l-transparent border-r-transparent rounded-full animate-spin" :class="`${size} ${color}`" />
+    </div>
+</template>

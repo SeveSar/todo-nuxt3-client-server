@@ -1,24 +1,3 @@
-<template>
-    <div>
-        <DatePicker
-v-model="internalValue" :mode="mode || 'date'" :min-date="minDate"
-            :popover="{ visibility: 'focus' }" class="w-full">
-            <template #default="{ inputValue, inputEvents, togglePopover }">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2">
-                        <button v-if="labelLeft" type="button" @click="togglePopover">
-                            {{ labelLeft }}
-                        </button>
-                        <UiInput
-:model-value="inputValue" readonly :error="error" v-on="inputEvents"
-                            @on-blur="togglePopover" @on-focus="emit('onFocus')" />
-                    </div>
-                </div>
-            </template>
-        </DatePicker>
-    </div>
-</template>
-
 <script setup lang="ts">
 import { DatePicker } from 'v-calendar';
 import UiInput from './ui-input.vue';
@@ -46,8 +25,29 @@ const internalValue = computed({
         emit('update:modelValue', value);
     },
 });
-
-
 </script>
+
+<template>
+    <div>
+        <DatePicker
+            v-model="internalValue" :mode="mode || 'date'" :min-date="minDate"
+            :popover="{ visibility: 'focus' }" class="w-full"
+        >
+            <template #default="{ inputValue, inputEvents, togglePopover }">
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                        <button v-if="labelLeft" type="button" @click="togglePopover">
+                            {{ labelLeft }}
+                        </button>
+                        <UiInput
+                            :model-value="inputValue" readonly :error="error" v-on="inputEvents"
+                            @on-blur="togglePopover" @on-focus="emit('onFocus')"
+                        />
+                    </div>
+                </div>
+            </template>
+        </DatePicker>
+    </div>
+</template>
 
 <style scoped></style>

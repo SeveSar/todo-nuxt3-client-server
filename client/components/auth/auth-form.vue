@@ -1,31 +1,15 @@
-<template>
-    <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
-        <UiInput v-model="email" label="Email" placeholder="Enter email" :error="emailError" :disabled="isAdmin"
-            @on-focus="resetField('email')" />
-        <UiInput v-model="password" label="password" placeholder="Пароль" :error="passwordError" :disabled="isAdmin"
-            @on-focus="resetField('password')" />
-        <UiCheckbox v-model="isRemember">
-            <span class="text-md text-gray-600">Запомнить меня?</span>
-        </UiCheckbox>
-        <UiButton type="submit" :is-loading="isLoadingForm">Войти</UiButton>
-        <UiCheckbox v-model="isAdmin">
-            <span class="text-md text-gray-600">Войти как админ?</span>
-        </UiCheckbox>
-
-    </form>
-</template>
-
 <script setup lang="ts">
-import UiInput from '../ui/ui-input.vue';
-import UiButton from '../ui/ui-button.vue';
-import UiCheckbox from '../ui/ui-checkbox.vue';
+import type { AppError } from '~/shared/types/app-error';
 import { useField, useForm } from 'vee-validate';
 import * as yup from 'yup';
-import { useUserStore } from '~/store/user-store';
-import { useToastStore } from '~/store/toast-store';
 import { getErrorMessage } from '~/shared/utils/get-error-message';
-import type { AppError } from '~/shared/types/app-error';
+import { useToastStore } from '~/store/toast-store';
+import { useUserStore } from '~/store/user-store';
+import UiButton from '../ui/ui-button.vue';
+import UiCheckbox from '../ui/ui-checkbox.vue';
+import UiInput from '../ui/ui-input.vue';
 
+defineEmits(['submit']);
 const ADMIN_EMAIL = 'admin@example.com';
 const ADMIN_PASSWORD = 'admin123';
 const isAdmin = ref(false);
@@ -45,10 +29,7 @@ const { value: email, errorMessage: emailError } = useField<string | null>('emai
 const { value: password, errorMessage: passwordError } = useField<string | null>('password', schema.password, { validateOnValueUpdate: false, initialValue: null });
 const { value: isRemember } = useField<boolean>('isRemember', schema.isRemember, { validateOnValueUpdate: false, initialValue: true });
 
-
-
-defineEmits(['submit']);
-const resetFields = (input: 'email' | 'password') => {
+function resetFields(input: 'email' | 'password') {
     if (input === 'email') {
         resetField('email', {
             value: email.value,
@@ -59,7 +40,7 @@ const resetFields = (input: 'email' | 'password') => {
             value: password.value,
         });
     }
-};
+}
 
 watch(email, () => {
     resetFields('email');
@@ -71,7 +52,8 @@ watch(isAdmin, () => {
     if (isAdmin.value) {
         email.value = ADMIN_EMAIL;
         password.value = ADMIN_PASSWORD;
-    } else {
+    }
+    else {
         email.value = null;
         password.value = null;
     }
@@ -94,5 +76,27 @@ const onSubmit = handleSubmit(async (values) => {
     }
 });
 </script>
+
+<template>
+    <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
+        <UiInput
+            v-model="email" label="Email" placeholder="Enter email" :error="emailError" :disabled="isAdmin"
+            @on-focus="resetField('email')"
+        />
+        <UiInput
+            v-model="password" label="password" placeholder="Пароль" :error="passwordError" :disabled="isAdmin"
+            @on-focus="resetField('password')"
+        />
+        <UiCheckbox v-model="isRemember">
+            <span class="text-md text-gray-600">Запомнить меня?</span>
+        </UiCheckbox>
+        <UiButton type="submit" :is-loading="isLoadingForm">
+            Войти
+        </UiButton>
+        <UiCheckbox v-model="isAdmin">
+            <span class="text-md text-gray-600">Войти как админ?</span>
+        </UiCheckbox>
+    </form>
+</template>
 
 <style scoped></style>

@@ -8,7 +8,7 @@ export default defineNuxtConfig({
         },
     },
     css: ['v-calendar/style.css'],
-    modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/eslint'],
+    modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
     // imports: {
     //   autoImport: false,
     // },
