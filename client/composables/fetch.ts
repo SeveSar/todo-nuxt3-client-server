@@ -2,17 +2,25 @@ import type { H3Event } from 'h3';
 import type { FetchOptions } from 'ofetch';
 import { appendResponseHeader } from 'h3';
 
-export async function fetchWithCookie<T>(event: H3Event, url: string, options: FetchOptions & {
-    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
-} = {}): Promise<T> {
-    const headers = useRequestHeaders(['cookie']);
-    console.log('EVENT: ', event);
+type HttpMethod
+    = | 'GET'
+        | 'POST'
+        | 'PUT'
+        | 'PATCH'
+        | 'DELETE'
+        | 'OPTIONS'
+        | 'HEAD';
+
+export async function fetchWithCookie<T>(
+    event: H3Event,
+    url: string,
+    options: FetchOptions & { method?: HttpMethod } = {},
+): Promise<T> {
     const res = await $fetch.raw<T>(url, {
-        credentials: 'include',
-        method: 'GET',
         ...options,
+        method: options.method ?? 'GET',
         headers: {
-            ...headers,
+            cookie: event.node.req.headers.cookie || '',
             ...(options.headers || {}),
         },
     });
@@ -23,8 +31,5 @@ export async function fetchWithCookie<T>(event: H3Event, url: string, options: F
         appendResponseHeader(event, 'set-cookie', cookie);
     }
 
-    if (!res._data) {
-        throw new Error(`Empty response from ${url}`);
-    }
-    return res._data;
+    return res._data!;
 }
