@@ -19,6 +19,8 @@ export async function fetchWithCookie<T>(event: H3Event, url: string, options: a
     if (!res._data) {
         throw new Error(`Empty response from ${url}`);
     }
-
+    console.log('SSR REQUEST:', url);
+    console.log('STATUS:', res.status);
+    console.log('HEADERS:', res.headers);
     return res._data;
 }
