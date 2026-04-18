@@ -2,26 +2,24 @@ import type { IUser } from '../../types/user';
 import { fetchWithCookie } from '@/composables/fetch';
 
 export function useUserApi() {
-    const { $api } = useNuxtApp();
     const config = useRuntimeConfig();
     return {
         login(data: Record<string, any>) {
-            return $api.post<IUser>('/auth/login', data);
+            const event = useRequestEvent();
+            return fetchWithCookie<IUser>(event!, `${config.public.apiBaseURL}/auth/login`, { body: data, method: 'POST' });
         },
         // loadUser() {
         //     return $api.get<IUser>('/auth/me');
         // },
         logout() {
-            return $api.get('/auth/logout');
+            const event = useRequestEvent();
+            return fetchWithCookie(event!, '/auth/logout');
         },
         refresh() {
             const event = useRequestEvent();
             return fetchWithCookie<IUser>(
                 event!,
                 `${config.public.apiBaseURL}/auth/refresh`,
-                {
-                    credentials: 'include',
-                },
             );
             // return $fetch<IUser>('/auth/refresh', {
             //     baseURL: config.public.apiBaseURL,
