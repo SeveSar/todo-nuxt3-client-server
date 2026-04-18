@@ -16,6 +16,7 @@ export async function fetchWithCookie<T>(
     url: string,
     options: FetchOptions & { method?: HttpMethod } = {},
 ): Promise<T> {
+    console.log('event.node.req.headers.cookie: ', event.node.req.headers.cookie);
     const res = await $fetch.raw<T>(url, {
         ...options,
         method: options.method ?? 'GET',
