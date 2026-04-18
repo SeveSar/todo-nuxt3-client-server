@@ -25,12 +25,12 @@ const OPTIONS = Object.values(ENUM_PRIORITY).map(value => ({
     label: TEXT_BY_ENUM_PRIORITY[value],
     value,
 }));
-
+const nowDate = useState('default-date', () => new Date());
 function GET_DEFAULT_FORM_DATA() {
     return ({
         title: null,
         description: null,
-        dueDate: new Date(),
+        dueDate: nowDate.value,
         priority: OPTIONS[0].value,
     }) as ITask;
 }
@@ -111,7 +111,7 @@ watch(priorityModel, () => {
 
                 <div class="flex items-center gap-2">
                     <UiDatePicker
-                        v-model="dueDateModel" :min-date="new Date()" label-left="Дата:" :error="dueDateError"
+                        v-model="dueDateModel" :min-date="nowDate" label-left="Дата:" :error="dueDateError"
                         @on-focus="resetDueDateField({ value: dueDateModel })"
                     />
                 </div>

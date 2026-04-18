@@ -22,7 +22,7 @@ function getPriorityVariant(priority: TypePriority) {
             return 'secondary';
     }
 }
-
+const nowDate = useState('default-date', () => new Date());
 const userStore = useUserStore();
 interface Props {
     item: ITask
@@ -45,13 +45,13 @@ interface Props {
             <div class="flex gap-3">
                 <div class="min-w-[109px]">
                     <UiBadge
-                        v-if="isSameDate(item.dueDate || new Date(), new Date())" class="min-w-[109px]"
+                        v-if="isSameDate(item.dueDate || nowDate, nowDate)" class="min-w-[109px]"
                         variant="warning"
                     >
                         Сегодня
                     </UiBadge>
                     <UiBadge
-                        v-if="isDateOverdueByDay(item.dueDate || new Date())" class="min-w-[109px]"
+                        v-if="isDateOverdueByDay(item.dueDate || nowDate)" class="min-w-[109px]"
                         variant="danger"
                     >
                         Просрочено
