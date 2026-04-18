@@ -2,11 +2,11 @@ import type { IUser } from '../../types/user';
 import { fetchWithCookie } from '@/composables/fetch';
 
 export function useUserApi() {
+    const { $api } = useNuxtApp();
     const config = useRuntimeConfig();
     return {
         login(data: Record<string, any>) {
-            const event = useRequestEvent();
-            return fetchWithCookie<IUser>(event!, `${config.public.apiBaseURL}/auth/login`, { body: data, method: 'POST' });
+            return $api.post<IUser>('/auth/login', data);
         },
         // loadUser() {
         //     return $api.get<IUser>('/auth/me');
